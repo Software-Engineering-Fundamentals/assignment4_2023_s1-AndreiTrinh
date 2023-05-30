@@ -1,8 +1,6 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Programmes offered by a university
@@ -12,7 +10,7 @@ public class Programme {
      * Name and id of the programme
      */
     private String name;
-    print int pID;
+    private int pID;
 
     /**
      * Start date of the programme
@@ -32,7 +30,7 @@ public class Programme {
     /**
      * Students allocated to the programme
      */
-    private List<Student> enrolled = new ArrayList<Student>();
+    private Set<Student> enrolledStudents = new HashSet<>();
 
     public String getName() {
         return name;
@@ -43,13 +41,12 @@ public class Programme {
     }
 
     public String getID() {
-        return pID;
+        return pID + "";
     }
 
     public void setID(int ID) {
         this.pID = ID;
     }
-
 
     public Date getStartDate() {
         return startDate;
@@ -75,31 +72,30 @@ public class Programme {
         this.estimatedDuration = estimatedDuration;
     }
 
-    public List<Student> getEnrollments() {
-        return enrolled;
+    public Set<Student> getEnrolledStudents() {
+        return enrolledStudents;
     }
 
-    
     public boolean removeEnrolledStudent(Student student) {
-    
-    	return false;
-    	   
+        return enrolledStudents.remove(student);
     }
 
+    public boolean addStudent(Student student) {
+        Date currentDate = new Date();
+        if (currentDate.after(startDate)) {
+            throw new IllegalStateException("Cannot enroll a student after the start date of the program.");
+        }
 
+        if (enrolledStudents.size() >= 250) {
+            return false;
+        }
 
-    /**
-     * Add a new student to the programme
-     * @param Student: to enroll  to student in a programme 
-     * @return true if the student is successfully enrolled, false otherwise
-     */
+        if (!student.getDepartment().isEmpty()) {
+            throw new IllegalArgumentException("Student is already enrolled in the same program.");
+        }
 
-    public boolean addStudent(Student student){
-    	return false;
-   
+        enrolledStudents.add(student);
+        student.setDepartment(name); // Update the department of the student to the program name
+        return true;
     }
-
-
-
-
 }
